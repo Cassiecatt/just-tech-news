@@ -1,6 +1,8 @@
 const User = require('./User');
 const Post = require('./Post');
 const Vote = require('./Vote');
+const sequelize = require('../config/connection');
+
 
 //create associations
 User.hasMany(Post, {
@@ -23,20 +25,21 @@ User.belongsToMany(Post, {
     foreignKey: 'post_id'
   });
 
-Vote.belongsTo(User, {
+  Vote.belongsTo(User, {
     foreignKey: 'user_id'
-});
-
-Vote.belongsTo(Post, {
+  });
+  
+  Vote.belongsTo(Post, {
     foreignKey: 'post_id'
-});
-
-User.hasMany(Vote, {
+  });
+  
+  User.hasMany(Vote, {
     foreignKey: 'user_id'
-});
-
-Post.hasMany(Vote, {
+  });
+  
+  Post.hasMany(Vote, {
     foreignKey: 'post_id'
-});
+  });
 
-module.exports = { User, Post, Vote };
+  module.exports = { User, Post, Vote };
+
