@@ -17,31 +17,31 @@ router.get("/", (req, res) => {
 //GET /api/users/1
 router.get("/:id", (req, res) => {
   User.findOne({
-    attributes: { exclude: ['password'] },
+    attributes: { exclude: ["password"] },
     where: {
-      id: req.params.id
+      id: req.params.id,
     },
     include: [
       {
         model: Post,
-        attributes: ['id', 'title', 'post_url', 'created_at']
+        attributes: ["id", "title", "post_url", "created_at"],
       },
       // include the Comment model here:
       {
         model: Comment,
-        attributes: ['id', 'comment_text', 'created_at'],
+        attributes: ["id", "comment_text", "created_at"],
         include: {
           model: Post,
-          attributes: ['title']
-        }
+          attributes: ["title"],
+        },
       },
       {
         model: Post,
-        attributes: ['title'],
+        attributes: ["title"],
         through: Vote,
-        as: 'voted_posts'
-      }
-    ]
+        as: "voted_posts",
+      },
+    ],
   })
     .then((dbUserData) => {
       if (!dbUserData) {
@@ -63,16 +63,15 @@ router.post("/", (req, res) => {
     username: req.body.username,
     email: req.body.email,
     password: req.body.password,
-  })
-  .then(dbUserData => {
+  }).then((dbUserData) => {
     req.session.save(() => {
       req.session.user_id = dbUserData.id;
       req.session.username = dbUserData.username;
       req.session.loggedIn = true;
-  
+
       res.json(dbUserData);
     });
-  })
+  });
 });
 
 router.post('/login', (req, res) => {
@@ -102,6 +101,18 @@ router.post('/login', (req, res) => {
       res.json({ user: dbUserData, message: 'You are now logged in!' });
     });
   });
+});
+
+//POST log out
+router.post('/logout', (req, res) => {
+  if (req.session.loggedIn) {
+    req.session.destroy(() => {
+      res.status(204).end();
+    });
+  }
+  else {
+    res.status(404).end();
+  }
 });
 
 // PUT /api/users/1
